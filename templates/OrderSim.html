@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <!-- get customer and
+        - also check if greenchoince user add $2
+        - check meal plan and limit under plan total
+    get dining location
+    get menu -->
+    <p>Hello</p>
+    <form action="{{ url_for('ContinueOrder') }}" method="post">
+        <select name = "cust_list">
+            {% for cust in cust_data %}
+                <option value="{{ cust.cust_ID }}">{{ cust.name }}</option>
+            {% endfor %}
+        </select>
+        <select name = "dining_list">
+            {% for dining in dining_data %}
+                <option value="{{ dining.dining_ID }}">{{ dining.name }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Select Items from Menu">
+     </form>
+</body>
+</html>
