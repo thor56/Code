@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add to Inventory</h1>
+    <form method="POST" action="{{ url_for('saveInventory') }}">
+      <label>Name</label>
+      <input type="text" name="item_name" required><br><br>
+      <label>Quantity</label>
+      <input type="number" name="quantity" min="0"><br><br>
+      <div class="form-group">
+        <label for="dining_list">Select the Dining</label>
+  
+          <select name = "dining_list">
+              
+              {% for dining in dining_data %}
+              
+                  <option value="{{ dining.dining_ID }}">{{ dining.name}}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <input type="submit" value="Add Item">
+    </form>
+    {% endblock %}
+

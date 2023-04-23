@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 
 # from flask_mysqldb import MySQL
 import os
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -10,14 +10,21 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask import jsonify
+from flask import jsonify, session
 import json
+from flask_bootstrap import Bootstrap5
+from flask_wtf import FlaskForm
+from wtforms import StringField, DecimalField, IntegerField, BooleanField, SubmitField
+from wtforms.validators import DataRequired
 
 
 app = Flask(__name__)
+bootstrap = Bootstrap5(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:password@localhost:3306/diningschema'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
 
 db = SQLAlchemy(app)
 
@@ -150,117 +157,245 @@ class Reviews(db.Model):
     orders = relationship('Orders')
 
 
-@app.route("/")
-def hello_world():
-    # meal_plan = MealPlans(price_limit=200,
-    #                       plan_description='Standard')
-    # db.session.add(meal_plan)
-    # db.session.commit()
+@app.route("/",  methods=['GET', 'POST'])
+def home():
+    if session.__contains__("loggedIn") == False:
+        session['emp_id'] = ''
+        session['loggedIn'] = False
 
-    new_customer = Customer(name=name, email=email,
-                            meal_plan_id=1, mobile=mobile)
-    db.session.add(new_customer)
-    db.session.commit()
-    return "<p>Hello, World!</p>"
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
-@app.route('/addDining', methods=['POST'])
-def add_dining():
-    name = request.json['name']
-    location = request.json['location']
-    franchise = request.json['franchise']
-    working_hours = request.json['working_hours']
+@app.route('/saveDining', methods=['GET', 'POST'])
+def saveDining():
+    name = request.form['name']
+    location = request.form['location']
+    franchise = request.form['franchise']
+    working_hours = request.form['working_hours']
     new_dining = Dining(name=name, location=location,
                         franchise=franchise, working_hours=working_hours)
     db.session.add(new_dining)
     db.session.commit()
-    return 'Successfully added'
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
-@app.route('/addMealplan', methods=['POST'])
-def add_mealplan():
-    p_limit = request.json['price_limit']
-    p_desc = request.json['plan_description']
+@app.route('/addDining', methods=['GET', 'POST'])
+def addDining():
+    return render_template('addDining.html')
 
-    mealplan = MealPlans(price_limit=p_limit,
-                         plan_description=p_desc)
-    db.session.add(mealplan)
+
+@app.route('/addMealPlan', methods=['GET', 'POST'])
+def addMealPlan():
+    return render_template('addMealPlan.html')
+
+
+@app.route('/saveMealPlan', methods=['POST'])
+def saveMealPlan():
+    price_limit = request.form['price_limit']
+    plan_description = request.form['plan_description']
+
+    new_mealplan = MealPlans(price_limit=price_limit,
+                             plan_description=plan_description)
+    db.session.add(new_mealplan)
     db.session.commit()
 
-    return 'Successfully added'
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
-@app.route('/addExpenses', methods=['POST'])
-def add_expense():
-    exp_description = request.json['exp_description']
-    exp_amount = request.json['exp_amount']
-    dining_id = request.json['dining_id']
+@app.route('/addExpense', methods=['GET', 'POST'])
+def addExpense():
+    dining_data = Dining.query.all()
+    return render_template('addExpense.html', dining_data=dining_data)
+
+
+@app.route('/saveExpense', methods=['POST'])
+def saveExpense():
+    exp_description = request.form['exp_description']
+    exp_amount = request.form['exp_amount']
+    dining_id = request.form['dining_list']
     new_expense = Expenses(exp_description=exp_description,
                            exp_amount=exp_amount, dining_id=dining_id)
     db.session.add(new_expense)
     db.session.commit()
-    return 'Successfully Added'
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
-@app.route('/addMenu', methods=['POST'])
-def add_menu():
-    if request.method == 'POST':
-        item_name = request.json['item_name']
-        item_price = request.json['item_price']
-        gluten_free = request.json['gluten_free']
-        alergen_free = request.json['alergen_free']
-        vegan = request.json['vegan']
-        dining_id = request.json['dining_id']
-
-        menu = Menu(item_name=item_name, item_price=item_price, gluten_free=gluten_free,
-                    alergen_free=alergen_free, vegan=vegan, dining_id=dining_id)
-        db.session.add(menu)
-        db.session.commit()
-
-        return 'Successfully Added'
-    return 'Failed to add'
+@app.route('/addMenuItem', methods=['GET', 'POST'])
+def addMenuItem():
+    dining_data = Dining.query.all()
+    return render_template('addMenuItem.html', dining_data=dining_data)
 
 
-@app.route('/addInventory', methods=['POST'])
-def add_inventory():
-    item_name = request.json['item_name']
-    quantity = request.json['quantity']
-    dining_id = request.json['dining_id']
+@app.route('/saveMenuItem', methods=['POST'])
+def saveMenuItem():
+    item_name = request.form['item_name']
+    item_price = request.form['item_price']
+    gluten_free = 0
+    if 'gluten_free' in request.form:
+        gluten_free = 1
+
+    alergen_free = 0
+    if 'alergen_free' in request.form:
+        alergen_free = 1
+
+    vegan = 0
+    if 'vegan' in request.form:
+        vegan = 1
+
+    dining_id = request.form['dining_list']
+
+    new_item = Menu(item_name=item_name, item_price=item_price,
+                    gluten_free=gluten_free, alergen_free=alergen_free, vegan=vegan, dining_id=dining_id)
+
+    db.session.add(new_item)
+    db.session.commit()
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
+
+
+@app.route('/addInventory', methods=['GET', 'POST'])
+def addInventory():
+    dining_data = Dining.query.all()
+    return render_template('addInventory.html', dining_data=dining_data)
+
+
+@app.route('/saveInventory', methods=['POST'])
+def saveInventory():
+    item_name = request.form['item_name']
+    quantity = request.form['quantity']
+    dining_id = request.form['dining_list']
     new_inventory = Inventory(
         item_name=item_name, quantity=quantity, dining_id=dining_id)
     db.session.add(new_inventory)
     db.session.commit()
-    return 'Successfully added'
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
-@app.route('/addEmployee', methods=['POST'])
-def add_employee():
-    emp_name = request.json['emp_name']
-    emp_address = request.json['emp_address']
-    emp_email = request.json['emp_email']
-    emp_mobile = request.json['emp_mobile']
-    emp_password = request.json['emp_password']
-    dining_id = request.json['dining_id']
+@app.route('/addEmployee', methods=['GET', 'POST'])
+def addEmployee():
+    dining_data = Dining.query.all()
+    return render_template('AddEmployee.html', dining_data=dining_data)
+
+
+@app.route('/saveEmployee', methods=['POST'])
+def save_employee():
+    emp_name = request.form['emp_name']
+    emp_address = request.form['emp_address']
+    emp_email = request.form['emp_email']
+    emp_mobile = request.form['emp_mobile']
+    emp_password = request.form['emp_password']
+    dining_id = request.form['dining_list']
     new_employee = Employee(emp_name=emp_name, emp_address=emp_address, emp_email=emp_email,
                             emp_mobile=emp_mobile, emp_password=emp_password, dining_id=dining_id)
     db.session.add(new_employee)
     db.session.commit()
-    return 'Successfully Added'
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
-@app.route('/addAsset', methods=['POST'])
-def add_asset():
-    if request.method == 'POST':
-        description = request.json['description']
-        value = request.json['value']
-        dining_id = request.json['dining_id']
-        asset = Assets(description=description,
+@app.route('/addAsset', methods=['GET', 'POST'])
+def addAsset():
+    dining_data = Dining.query.all()
+    return render_template('addAsset.html', dining_data=dining_data)
+
+
+@app.route('/saveAsset', methods=['POST'])
+def saveAsset():
+    description = request.form['description']
+    value = request.form['value']
+    dining_id = request.form['dining_list']
+    new_asset = Assets(description=description,
                        value=value, dining_id=dining_id)
-        db.session.add(asset)
-        db.session.commit()
+    db.session.add(new_asset)
+    db.session.commit()
 
-        return 'Successfully Added'
-    return 'Failed to add'
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
 @app.route('/addOrders', methods=['POST'])
@@ -305,19 +440,31 @@ def add_payment():
     return 'Failed to add'
 
 
-@app.route('/addReview', methods=['POST'])
-def add_review():
-    if request.method == 'POST':
-        review_description = request.json['review_description']
-        order_id = request.json['order_id']
+@app.route('/addReview', methods=['GET', 'POST'])
+def addReview():
+    return render_template('addReview.html')
 
-        review = Reviews(
-            review_description=review_description, order_id=order_id)
-        db.session.add(review)
-        db.session.commit()
 
-        return 'Successfully added'
-    return 'Failed to add'
+@app.route('/saveReview', methods=['POST'])
+def saveReview():
+    review_description = request.form['review_description']
+    order_id = request.form['order_id']
+    new_review = Reviews(
+        review_description=review_description, order_id=order_id)
+    db.session.add(new_review)
+    db.session.commit()
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    menu_data = Menu.query.all()
+    return render_template('index.html', menu_data=menu_data, fc_dict=food_court)
 
 
 @app.route('/addGreenchoiceuser', methods=['POST'])
@@ -463,7 +610,92 @@ def FinishOrder():
 
 
 # employee login and actions
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if session['loggedIn'] == True:
+        return 'Already logged in'
+    return render_template('login.html')
+
+
+@app.route('/validate', methods=['POST'])
+def validate():
+    emp_ID = request.form['emp_ID']
+    emp_password = request.form['emp_password']
+    employee = Employee.query.filter_by(
+        emp_email=emp_ID, emp_password=emp_password).first()
+
+    if employee is not None:
+        session['emp_id'] = employee.emp_ID
+        session['loggedIn'] = True
+        return redirect(url_for('home'))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/signout', methods=['GET', 'POST'])
+def signout():
+    session['loggedIn'] = False
+    session['emp_id'] = ''
+    return render_template('login.html')
+
+
+# ------------------------------------------------------------------
+
+# class MenuForm(FlaskForm):
+#     item_name = StringField('Item Name', validators=[DataRequired()])
+#     item_price = DecimalField('Item Price', validators=[DataRequired()])
+#     dining_id = IntegerField('Location', validators=[DataRequired()])
+#     gluten_free = BooleanField('Gluten Free')
+#     alergen_free = BooleanField('Alergen Free')
+#     vegan = BooleanField('Vegan')
+#     submit = SubmitField('Submit')
+
+
+# @app.route('/add_menu', methods=['GET', 'POST'])
+# def add_menu():
+#     form = MenuForm()
+#     if form.validate_on_submit():
+#         # Save the new menu item to the database
+#         new_menu_item = Menu(
+#             item_name=form.item_name.data,
+#             item_price=form.item_price.data,
+#             dining_id=form.dining_location.data.id,
+#             gluten_free=form.gluten_free.data,
+#             alergen_free=form.alergen_free.data,
+#             vegan=form.vegan.data
+#         )
+#         db.session.add(new_menu_item)
+#         db.session.commit()
+
+#         flash('New menu item added!')
+#         return redirect(url_for('menu'))
+
+#     return render_template('add_menu.html', form=form)
+
+
+# @app.route('/update_menu/<int:menu_id>', methods=['GET', 'POST'])
+# def update_menu(menu_id):
+#     menu_item = Menu.query.get_or_404(menu_id)
+#     form = MenuForm(obj=menu_item)
+#     if form.validate_on_submit():
+#         # Update the existing menu item in the database
+#         menu_item.item_name = form.item_name.data
+#         menu_item.item_price = form.item_price.data
+#         menu_item.dining_id = form.dining_location.data.id
+#         menu_item.gluten_free = form.gluten_free.data
+#         menu_item.alergen_free = form.alergen_free.data
+#         menu_item.vegan = form.vegan.data
+#         db.session.commit()
+
+#         flash('Menu item updated!')
+#         return redirect(url_for('menu'))
+
+#     return render_template('update_menu.html', form=form, menu_item=menu_item)
 
 
 if __name__ == '__main__':
+
+    session.init_app(app)
+
+    app.debug = True
     app.run()

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add Dining</h1>
+    <form method="POST" action="{{ url_for('saveDining') }}">
+      <label>Name:</label>
+      <input type="text" name="name"><br><br>
+      <label>Location:</label>
+      <input type="text" name="location"><br><br>
+      <label>Franchise:</label>
+      <input type="text" name="franchise"><br><br>
+      <label>Working Hours:</label>
+      <input type="text" name="working_hours"><br><br>
+      <input type="submit" value="Add Dining">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+    {{ bootstrap.load_css() }}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Home</a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            {% if session['loggedIn'] == false %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            </li>
+    
+            {% else %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Add Data
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('addEmployee') }}">Add Employee</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addExpense') }}">Add Expense</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addInventory') }}">Manage Inventory</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addAsset') }}">Add Asset</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addDining') }}">Add Dining</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addMenuItem') }}">Add Menu Items</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addMealPlan') }}">Add Meal Plans</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('addReview') }}">Add Reviews</a></li>
+              </ul>
+            </li>
+            <!-- <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                View Data
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Employee</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Expense</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Manage Inventory</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Asset</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Dining</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Menu Items</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Meal Plans</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('login') }}">Add Reviews</a></li>
+              </ul>
+            </li> -->
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('signout') }}">Sign Out</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="container">
+      <h1>{{ title }}</h1>
+      <hr>
+      {% block content %}{% endblock %}
+    </div>
+    
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+    
+    {{ bootstrap.load_js() }}
+      
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

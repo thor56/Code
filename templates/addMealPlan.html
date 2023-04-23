@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add Meal Plan</h1>
+    <form method="POST" action="{{ url_for('saveMealPlan') }}">
+      <label>Price Limit:</label>
+      <input type="number" name="price_limit"><br><br>
+      <label>Plan Description:</label>
+      <input type="text" name="plan_description"><br><br>
+      <input type="submit" value="Add Meal Plan">
+    </form>
+{% endblock %}

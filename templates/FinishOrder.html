@@ -1,15 +1,6 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-
-    <p>Hello</p>
-    
+{% block content %}
 <!-- # select items and calculate order total and list of menu items -->
 <form action="{{ url_for('FinishOrder') }}" method="post">
     <table class="table table-condensed">
@@ -79,7 +70,4 @@
 </div>
 
  </form>
-
-</body>
-
-</html>
+{% endblock %}

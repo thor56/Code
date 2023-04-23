@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Login</h1>
+    <form action="/validate" method="POST">
+      <label for="emp_ID">Employee email:</label>
+      <input type="text" id="emp_ID" name="emp_ID"><br>
+
+      <label for="emp_password">Password:</label>
+      <input type="password" id="emp_password" name="emp_password"><br>
+
+      <input type="submit" value="Login">
+    </form>
+{% endblock %}

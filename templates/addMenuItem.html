@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add Menu Item</h1>
+    <form method="POST" action="{{ url_for('saveMenuItem') }}">
+      <label>Name:</label>
+      <input type="text" name="item_name"><br><br>
+      <label>Price:</label>
+      <input type="number" name="item_price"><br><br>
+      <label>Gluten-free:</label>
+      <input type="checkbox" name="gluten_free" value="1"><br><br>
+      <label>Allergen-free:</label>
+      <input type="checkbox" name="alergen_free" value="1"><br><br>
+      <label>Vegan:</label>
+      <input type="checkbox" name="vegan" value="1"><br><br>
+      <div class="form-group">
+        <label for="dining_list">Select the Dining</label>
+  
+          <select name = "dining_list">
+              
+              {% for dining in dining_data %}
+              
+                  <option value="{{ dining.dining_ID }}">{{ dining.name}}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <input type="submit" value="Add Menu Item">
+    </form>
+{% endblock %}

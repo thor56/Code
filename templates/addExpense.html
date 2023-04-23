@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add Expense</h1>
+    <form method="POST" action="{{ url_for('saveExpense') }}">
+      <label>Description:</label>
+      <input type="text" name="exp_description"><br><br>
+      <label>Amount:</label>
+      <input type="number" name="exp_amount"><br><br>
+      <div class="form-group">
+        <label for="dining_list">Select the Dining</label>
+  
+          <select name = "dining_list">
+              
+              {% for dining in dining_data %}
+              
+                  <option value="{{ dining.dining_ID }}">{{ dining.name}}</option>
+              {% endfor %}
+          </select>
+      </div>
+      <input type="submit" value="Add Expense">
+    </form>
+
+{% endblock %}
+
