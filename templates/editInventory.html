@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Inventory Item</h1>
+    <form method="POST" action="">
+        <label>Name</label>
+        <input type="text" name="item_name" value="{{ inventory_item.item_name }}" required><br><br>
+        <label>Quantity</label>
+        <input type="number" name="quantity" value="{{ inventory_item.quantity }}" min="0"><br><br>
+       
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}

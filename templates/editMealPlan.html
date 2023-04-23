@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Edit Meal Plan</h1>
+  <form action="{{ url_for('editMealPlan', plan_id=mealplan.plan_ID) }}" method="post">
+    <div class="form-group">
+      <label for="price_limit">Price Limit:</label>
+      <input type="number" class="form-control" id="price_limit" name="price_limit" value="{{ mealplan.price_limit }}" required>
+    </div>
+    <div class="form-group">
+      <label for="plan_description">Plan Description:</label>
+      <input type="text" class="form-control" id="plan_description" name="plan_description" value="{{ mealplan.plan_description }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+{% endblock %}

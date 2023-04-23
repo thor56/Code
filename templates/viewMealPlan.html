@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Mean Plans</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Plan Name</th>
+                <th scope="col">Price Limit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in mealplan %}
+            <tr>
+                <td>{{ item.plan_ID }}</td>
+                <td>{{ item.plan_description }}</td>
+                <td>{{ item.price_limit }}</td>
+                <td>
+                    <a href="{{ url_for('editMealPlan', plan_id=item.plan_ID) }}" class="btn btn-primary">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

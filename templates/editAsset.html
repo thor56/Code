@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Asset</h1>
+    <form method="POST" action="{{ url_for('editAsset', asset_id=asset.asset_ID) }}">
+        <label>Description:</label>
+        <input type="text" name="description" value="{{ asset.description }}"><br><br>
+        <label>Value:</label>
+        <input type="number" name="value" value="{{ asset.value }}"><br><br>
+        
+        <input type="submit" value="Save Asset">
+    </form>
+{% endblock %}

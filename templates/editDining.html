@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Dining</h1>
+    <form method="POST" action="{{ url_for('editDining', dining_id=dining.dining_ID) }}">
+      <label>Name:</label>
+      <input type="text" name="name" value="{{ dining.name }}"><br><br>
+      <label>Location:</label>
+      <input type="text" name="location" value="{{ dining.location }}"><br><br>
+      <label>Franchise:</label>
+      <input type="text" name="franchise" value="{{ dining.franchise }}"><br><br>
+      <label>Working Hours:</label>
+      <input type="text" name="working_hours" value="{{ dining.working_hours }}"><br><br>
+      <input type="submit" value="Update">
+    </form>
+{% endblock %}

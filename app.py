@@ -138,6 +138,7 @@ class Assets(db.Model):
     description = Column(String(50))
     value = Column(Integer)
     dining_id = Column(Integer, ForeignKey('dining.dining_ID'))
+    dining = relationship("Dining")
 
 
 class Payment(db.Model):
@@ -641,56 +642,225 @@ def signout():
 
 # ------------------------------------------------------------------
 
-# class MenuForm(FlaskForm):
-#     item_name = StringField('Item Name', validators=[DataRequired()])
-#     item_price = DecimalField('Item Price', validators=[DataRequired()])
-#     dining_id = IntegerField('Location', validators=[DataRequired()])
-#     gluten_free = BooleanField('Gluten Free')
-#     alergen_free = BooleanField('Alergen Free')
-#     vegan = BooleanField('Vegan')
-#     submit = SubmitField('Submit')
+@app.route('/update_menu/<int:menu_id>', methods=['GET', 'POST'])
+def update_menu(menu_id):
+    menu = Menu.query.filter_by(menu_ID=menu_id).first()
+
+    if request.method == 'POST':
+        item_name = request.form['item_name']
+        item_price = request.form['item_price']
+        dining_id = request.form['dining_id']
+        gluten_free = 1 if request.form.get('gluten_free') else 0
+        alergen_free = 1 if request.form.get('alergen_free') else 0
+        vegan = 1 if request.form.get('vegan') else 0
+
+        menu.item_name = item_name
+        menu.item_price = item_price
+        menu.dining_id = dining_id
+        menu.gluten_free = gluten_free
+        menu.alergen_free = alergen_free
+        menu.vegan = vegan
+
+        db.session.commit()
+
+        return redirect(url_for('home'))
+
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+
+    return render_template('update_menu.html', menu_item=menu, food_court=food_court, menu_id=menu_id)
 
 
-# @app.route('/add_menu', methods=['GET', 'POST'])
-# def add_menu():
-#     form = MenuForm()
-#     if form.validate_on_submit():
-#         # Save the new menu item to the database
-#         new_menu_item = Menu(
-#             item_name=form.item_name.data,
-#             item_price=form.item_price.data,
-#             dining_id=form.dining_location.data.id,
-#             gluten_free=form.gluten_free.data,
-#             alergen_free=form.alergen_free.data,
-#             vegan=form.vegan.data
-#         )
-#         db.session.add(new_menu_item)
-#         db.session.commit()
+# @app.route('/delete_menu/<int:menu_id>', methods=['POST'])
+# def delete_menu(menu_id):
+#     menu = Menu.query.filter_by(menu_ID=menu_id).first()
 
-#         flash('New menu item added!')
-#         return redirect(url_for('menu'))
+#     db.session.delete(menu)
+#     db.session.commit()
 
-#     return render_template('add_menu.html', form=form)
+#     return redirect(url_for('home'))
 
 
-# @app.route('/update_menu/<int:menu_id>', methods=['GET', 'POST'])
-# def update_menu(menu_id):
-#     menu_item = Menu.query.get_or_404(menu_id)
-#     form = MenuForm(obj=menu_item)
-#     if form.validate_on_submit():
-#         # Update the existing menu item in the database
-#         menu_item.item_name = form.item_name.data
-#         menu_item.item_price = form.item_price.data
-#         menu_item.dining_id = form.dining_location.data.id
-#         menu_item.gluten_free = form.gluten_free.data
-#         menu_item.alergen_free = form.alergen_free.data
-#         menu_item.vegan = form.vegan.data
-#         db.session.commit()
+@app.route('/Employee')
+def viewEmployees():
+    employees = Employee.query.all()
+    food_court = {
+        1: "Food Court",
+        2: "Eagle Landing",
+        3: "Bruce Dining",
+        4: "Chic-Fil-A",
+        5: "Burger King",
+        6: "Fuzzys",
+        7: "Clark Bakery",
+        8: "Mean Green"
+    }
+    return render_template('Employee.html', employees=employees, fc_dict=food_court)
 
-#         flash('Menu item updated!')
-#         return redirect(url_for('menu'))
 
-#     return render_template('update_menu.html', form=form, menu_item=menu_item)
+@app.route('/editEmployee/<int:emp_id>', methods=['GET', 'POST'])
+def editEmployee(emp_id):
+    employee = Employee.query.get(emp_id)
+    dining_data = Dining.query.all()
+    if request.method == 'POST':
+        employee.emp_name = request.form['emp_name']
+        employee.emp_address = request.form['emp_address']
+        employee.emp_email = request.form['emp_email']
+        employee.emp_mobile = request.form['emp_mobile']
+        # employee.emp_password = request.form['emp_password']
+        # employee.dining_id = request.form['dining_list']
+        db.session.commit()
+        return redirect(url_for('viewEmployees'))
+    else:
+        return render_template('editEmployee.html', employee=employee, dining_data=dining_data)
+
+
+@app.route('/deleteEmployee/<int:emp_id>', methods=['POST'])
+def deleteEmployee(emp_id):
+    employee = Employee.query.get(emp_id)
+    db.session.delete(employee)
+    db.session.commit()
+    return redirect(url_for('viewEmployees'))
+
+
+@app.route('/viewExpenses', methods=['GET'])
+def viewExpenses():
+    expenses = Expenses.query.all()
+    return render_template('viewExpenses.html', expenses=expenses)
+
+
+@app.route('/editExpense/<expense_id>', methods=['GET', 'POST'])
+def editExpense(expense_id):
+    expense = Expenses.query.get(expense_id)
+    if request.method == 'POST':
+        expense.exp_description = request.form['exp_description']
+        expense.exp_amount = request.form['exp_amount']
+        db.session.commit()
+        return redirect(url_for('viewExpenses'))
+    else:
+        dining_data = Dining.query.all()
+        return render_template('editExpense.html', expense=expense, dining_data=dining_data)
+
+
+@app.route('/deleteExpense/<expense_id>', methods=['GET'])
+def deleteExpense(expense_id):
+    expense = Expenses.query.get(expense_id)
+    db.session.delete(expense)
+    db.session.commit()
+    return redirect(url_for('viewExpenses'))
+
+
+@app.route('/viewInventory')
+def viewInventory():
+    inventory_data = Inventory.query.all()
+    return render_template('viewInventory.html', inventory_data=inventory_data)
+
+
+@app.route('/editInventory/<int:item_id>', methods=['GET', 'POST'])
+def editInventory(item_id):
+    inventory_item = Inventory.query.filter_by(item_ID=item_id).first()
+
+    if request.method == 'POST':
+        inventory_item.item_name = request.form['item_name']
+        inventory_item.quantity = request.form['quantity']
+        db.session.commit()
+        return redirect(url_for('viewInventory'))
+
+    dining_data = Dining.query.all()
+    return render_template('editInventory.html', inventory_item=inventory_item, dining_data=dining_data)
+
+
+@app.route('/deleteInventory/<item_id>', methods=['GET'])
+def deleteInventory(item_id):
+    inventory = Inventory.query.get(item_id)
+    db.session.delete(inventory)
+    db.session.commit()
+    return redirect(url_for('viewInventory'))
+
+
+@app.route('/viewAssets')
+def viewAssets():
+    assets_data = Assets.query.all()
+    return render_template('viewAssets.html', assets_data=assets_data)
+
+
+@app.route('/editAsset/<int:asset_id>', methods=['GET', 'POST'])
+def editAsset(asset_id):
+    asset = Assets.query.get(asset_id)
+    dining_data = Dining.query.all()
+    if request.method == 'POST':
+        asset.description = request.form['description']
+        asset.value = request.form['value']
+        db.session.commit()
+        return redirect(url_for('viewAssets'))
+    return render_template('editAsset.html', asset=asset, dining_data=dining_data)
+
+
+@app.route('/deleteAsset/<int:asset_id>')
+def deleteAsset(asset_id):
+    asset = Assets.query.get(asset_id)
+    db.session.delete(asset)
+    db.session.commit()
+    return redirect(url_for('viewAssets'))
+
+
+@app.route('/viewDining')
+def viewDining():
+    dining_data = Dining.query.all()
+    return render_template('viewDining.html', dining_data=dining_data)
+
+
+@app.route('/editDining/<int:dining_id>', methods=['GET', 'POST'])
+def editDining(dining_id):
+    dining = Dining.query.filter_by(dining_ID=dining_id).first()
+    if request.method == 'POST':
+        dining.name = request.form['name']
+        dining.location = request.form['location']
+        dining.franchise = request.form['franchise']
+        dining.working_hours = request.form['working_hours']
+        db.session.commit()
+        return redirect(url_for('viewDining'))
+    return render_template('editDining.html', dining=dining)
+
+
+@app.route('/deleteDining/<int:dining_id>', methods=['GET', 'POST'])
+def deleteDining(dining_id):
+    dining = Dining.query.filter_by(dining_ID=dining_id).first()
+    db.session.delete(dining)
+    db.session.commit()
+    return redirect(url_for('viewDining'))
+
+
+@app.route('/viewMealPlan')
+def viewMealPlan():
+    mealplan = MealPlans.query.all()
+    return render_template('viewMealPlan.html', mealplan=mealplan)
+
+
+@app.route('/editMealPlan/<int:plan_id>', methods=['GET', 'POST'])
+def editMealPlan(plan_id):
+    mealplan = MealPlans.query.filter_by(plan_ID=plan_id).first()
+
+    if request.method == 'POST':
+        mealplan.price_limit = request.form['price_limit']
+        mealplan.plan_description = request.form['plan_description']
+        db.session.commit()
+        return redirect(url_for('viewMealPlan', plan_id=mealplan.plan_ID))
+
+    return render_template('editMealPlan.html', mealplan=mealplan)
+
+
+@app.route('/viewReviews')
+def viewReviews():
+    reviews = Reviews.query.all()
+    return render_template('viewReviews.html', reviews=reviews)
 
 
 if __name__ == '__main__':

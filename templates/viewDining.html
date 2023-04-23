@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Dining List</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Location</th>
+                <th scope="col">Franchise</th>
+                <th scope="col">Working Hours</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dining in dining_data %}
+            <tr>
+                <td>{{ dining.dining_ID }}</td>
+                <td>{{ dining.name }}</td>
+                <td>{{ dining.location }}</td>
+                <td>{{ dining.franchise }}</td>
+                <td>{{ dining.working_hours }}</td>
+                <td>
+                    <a href="{{ url_for('editDining', dining_id=dining.dining_ID) }}" class="btn btn-primary">Edit</a>
+                    <a href="{{ url_for('deleteDining', dining_id=dining.dining_ID) }}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

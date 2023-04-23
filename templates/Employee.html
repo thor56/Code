@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<table id="data" class="table table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <th>Email</th>
+      <th>Mobile</th>
+      <th>Location</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in employees %}
+    <tr class="row100 body">
+      <td>{{ row.emp_name }}</td>
+      <td>{{ row.emp_address }}</td>
+      <td>{{ row.emp_email }}</td>
+      <td>{{ row.emp_mobile }}</td>
+      <td>{{ fc_dict.get(row.dining_id) }}</td>
+      <td>
+        <form action="{{ url_for('editEmployee', emp_id=row.emp_ID) }}" method="get">
+          <button type="submit" class="btn btn-sm btn-success">Edit</button>
+        </form>
+        <form action="{{ url_for('deleteEmployee', emp_id=row.emp_ID) }}" method="post">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

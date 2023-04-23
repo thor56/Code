@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Edit Expense</h1>
+
+<form method="POST" action="{{ url_for('editExpense', expense_id=expense.expense_ID) }}">
+  <label>Description:</label>
+  <input type="text" name="exp_description" value="{{ expense.exp_description }}"><br><br>
+  <label>Amount:</label>
+  <input type="number" name="exp_amount" value="{{ expense.exp_amount }}"><br><br>
+  <input type="submit" value="Save">
+</form>
+
+{% endblock %}

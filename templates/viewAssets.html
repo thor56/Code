@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Inventory</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Description</th>
+                <th scope="col">Value</th>
+                <th scope="col">Dining</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets_data %}
+            <tr>
+                <td>{{ asset.asset_ID }}</td>
+                <td>{{ asset.description }}</td>
+                <td>{{ asset.value }}</td>
+                <td>{{ asset.dining.name}}</td>
+                <td>
+                    <a href="{{ url_for('editAsset', asset_id=asset.asset_ID) }}" class="btn btn-primary">Edit</a>
+                    <a href="{{ url_for('deleteAsset', asset_id=asset.asset_ID) }}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Expenses</h1>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Description</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Dining</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for expense in expenses %}
+    <tr class="row100 body">
+      <th scope="row">{{ expense.expense_ID}}</th>
+      <td>{{ expense.exp_description }}</td>
+      <td>{{ expense.exp_amount }}</td>
+      <td>{{ expense.dining.name }}</td>
+      <td>
+        <a href="{{ url_for('editExpense', expense_id=expense.expense_ID) }}" class="btn btn-primary">Edit</a>
+        <a href="{{ url_for('deleteExpense', expense_id=expense.expense_ID) }}" class="btn btn-danger">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

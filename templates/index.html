@@ -3,28 +3,35 @@
 {% block content %}
 
 <table id="data" class="table table-striped">
-    <thead>
-      <tr>
-        <th>Item Name</th>
-        <th>Price</th>
-        <th>Location</th>
-        <th>Gluten Free</th>
-        <th>Alergen Free</th>
-        <th>Vegan</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for row in menu_data %}
-                <tr class="row100 body">
-                  <td>{{ row.item_name }}</td>
-                  <td>{{ row.item_price }}</td>
-                  <td>{{ fc_dict.get(row.dining_id) }}</td>
-                  <td>{{ 'No' if row.gluten_free == 0 else 'Yes'  }}</td>
-                  <td>{{ 'No' if row.alergen_free == 0 else 'Yes'  }}</td>
-                  <td>{{ 'No' if row.vegan == 0 else 'Yes'  }}</td>
-                </tr>
-        {% endfor %}
-    </tbody>
-  </table>
+  <thead>
+    <tr>
+      <th>Item Name</th>
+      <th>Price</th>
+      <th>Location</th>
+      <th>Gluten Free</th>
+      <th>Alergen Free</th>
+      <th>Vegan</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in menu_data %}
+    <tr class="row100 body">
+      <td>{{ row.item_name }}</td>
+      <td>{{ row.item_price }}</td>
+      <td>{{ fc_dict.get(row.dining_id) }}</td>
+      <td>{{ 'No' if row.gluten_free == 0 else 'Yes'  }}</td>
+      <td>{{ 'No' if row.alergen_free == 0 else 'Yes'  }}</td>
+      <td>{{ 'No' if row.vegan == 0 else 'Yes'  }}</td>
+      <td>
+        <form action="{{ url_for('update_menu', menu_id=row.menu_ID) }}" method="get">
+          <button type="submit" class="btn btn-sm btn-success">Edit</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 
   {% endblock %}

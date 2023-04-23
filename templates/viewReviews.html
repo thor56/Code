@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Reviews</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Review</th>
+                <th scope="col">By</th>
+                <th scope="col">For order from</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in reviews %}
+            <tr>
+                <td>{{ review.review_description }}</td>
+                <td>{{ review.orders.customer.name }}</td>
+                <td>{{ review.orders.dining.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
