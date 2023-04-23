@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Orders</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Location</th>
+        <th>Total</th>
+        <th>Dining</th>
+        <th>Customer</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+        <tr>
+          <td>{{ order.order_ID }}</td>
+          <td>{{ order.order_location }}</td>
+          <td>{{ order.order_total }}</td>
+          <td>{{ order.dining.name }}</td>
+          <td>{{ order.customer.name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

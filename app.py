@@ -501,6 +501,12 @@ def add_orderitem():
     return 'Failed to add'
 
 
+@app.route('/viewOrders')
+def viewOrders():
+    orders = Orders.query.all()
+    return render_template('viewOrders.html', orders=orders)
+
+
 # Simulating an order
 
 @app.route('/orderSim')
@@ -607,7 +613,7 @@ def FinishOrder():
         db.session.add(new_dining_customer)
         db.session.commit()
     print(exists)
-    return 'Successfully added'
+    return redirect(url_for('home'))
 
 
 # employee login and actions
